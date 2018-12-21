@@ -1,0 +1,29 @@
+#if ($packageName)
+package $packageName;
+
+#end##
+
+import org.junit.runner.RunWith;
+
+import cucumber.api.CucumberOptions;
+import net.serenitybdd.cucumber.CucumberWithSerenity;
+import cucumber.api.junit.Cucumber;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+strict = $strict,
+features = {"$featureFile"},
+#if($plugins)
+plugin = {
+#foreach ($p in $plugins)
+"$p",
+#end
+},
+#end
+monochrome = $monochrome,
+#if(!$featureFile.contains(".feature:") && $tags)
+tags = #stringArray($tags),
+#end
+glue = {"$glue"})
+public class $className {
+}

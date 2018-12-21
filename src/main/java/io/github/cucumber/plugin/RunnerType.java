@@ -11,9 +11,5 @@ public enum RunnerType {
    /**
     * Junit runner type.
     */
-   JUNIT,
-   /**
-    * Testng runner type.
-    */
-   TESTNG
+   JUNIT
 }

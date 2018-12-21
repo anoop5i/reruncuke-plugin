@@ -70,7 +70,7 @@ public class RunnerMojo extends AbstractMojo {
     * <ul>
     * <li>SERENITY - for runners with cucumber serenity runner</li>
     * <li>JUNIT- for runners with Cucumber runner</li>
-    * <li>TESTNG - for runners with TESTNG annotations</li>
+    * <li>TESTNG - for runners with TESTNG annotations ****Pending implementation****</li>
     * </ul>
     * </p>
     */
@@ -88,7 +88,7 @@ public class RunnerMojo extends AbstractMojo {
     */
    public void execute() throws MojoFailureException {
       if (type == null) {
-         throw new MojoFailureException("Failed to find the type: expected JUNIT, SERENITY or TESTNG as type");
+         throw new MojoFailureException("Failed to find the type: expected JUNIT or SERENITY as type");
       }
       try {
          final String userDir = System.getProperty("user.dir");
@@ -109,8 +109,8 @@ public class RunnerMojo extends AbstractMojo {
             try {
                final String text = new String(Files.readAllBytes(x), StandardCharsets.UTF_8);
                final String className = String.format("FailedRunner%d.java", index[0]);
-               final String plugin = String.format("json:%sFailed%d.json", Paths.get(jsonPath).toUri().toString().replaceAll("file:///", ""), index[0]);
-               final String rerun = String.format("rerun:%sFailed%d.txt", Paths.get(jsonPath).toUri().toString().replaceAll("file:///", ""), index[0]);
+               final String plugin = String.format("json:target/cucumber-parallel/Failed%d.json", index[0]);
+               final String rerun = String.format("rerun:target/cucumber-parallel/Failed%d.txt", index[0]);
                List<String> plugins = new ArrayList<>();
                plugins.add(plugin);
                plugins.add(rerun);
@@ -141,8 +141,18 @@ public class RunnerMojo extends AbstractMojo {
     * @param plugin List of plugins
     */
    public void writeTemplate(final String feature, Writer writer, final String className, final List<String> plugin) {
-      //TODO templates for junit and TESTNG
-      String name = "cucumber-serenity-runner.vm";
+      //TODO template for TESTNG
+      String name = null;
+      switch (RunnerType.valueOf(type)) {
+         case JUNIT:
+            name = "cucumber-junit-runner.vm";
+            break;
+         case SERENITY:
+            name = "cucumber-serenity-runner.vm";
+            break;
+         default:
+            break;
+      }
       VelocityEngine velocityEngine = getVelocityEngine();
       Template template = velocityEngine.getTemplate(name);
       template.merge(buildContext(feature, className, plugin), writer);
