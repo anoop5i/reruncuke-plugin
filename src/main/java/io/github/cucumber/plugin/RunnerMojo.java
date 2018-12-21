@@ -22,7 +22,9 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
@@ -39,17 +41,55 @@ import org.apache.velocity.app.VelocityEngine;
  */
 @Mojo(name = "rerun")
 public class RunnerMojo extends AbstractMojo {
-   @Parameter(property = "jsonResultFolder", defaultValue = "/cucumber-parallel/", required = true)
+
+   /**
+    * This property defines the json path and is required
+    *
+    * e.g., <jsonPath>${project.build.dir}/cucumber-parallel</jsonPath>
+    */
+   @Parameter(property = "jsonResultFolder", required = true)
    private String jsonPath;
 
+   /**
+    * This property value will be used as the package name for the failed test runners
+    *
+    * e.g.,<package>com.test.failed</package>
+    */
    @Parameter(property = "packageName", required = true)
    private String packageName;
 
+   /**
+    * Property to add the glue package e.g., <glue>com.test.abc</glue>
+    */
    @Parameter(property = "steps", required = true)
    private String glue;
 
+   /**
+    * type selection
+    * <p>
+    * <ul>
+    * <li>SERENITY - for runners with cucumber serenity runner</li>
+    * <li>JUNIT- for runners with Cucumber runner</li>
+    * <li>TESTNG - for runners with TESTNG annotations</li>
+    * </ul>
+    * </p>
+    */
+   @Parameter(property = "type", required = true)
+   private String type;
 
+
+   /**
+    * This method locates all the failed rerun txt files from the jsonPath and creates separate runners for each txt file.
+    * <p>
+    * The generated runner classes will be saved under src/test/java and package name set in the config.
+    * </p>
+    *
+    * @throws MojoFailureException
+    */
    public void execute() throws MojoFailureException {
+      if (type == null) {
+         throw new MojoFailureException("Failed to find the type: expected JUNIT, SERENITY or TESTNG as type");
+      }
       try {
          final String userDir = System.getProperty("user.dir");
          final Path dir = Paths.get(jsonPath);
@@ -69,19 +109,22 @@ public class RunnerMojo extends AbstractMojo {
             try {
                final String text = new String(Files.readAllBytes(x), StandardCharsets.UTF_8);
                final String className = String.format("FailedRunner%d.java", index[0]);
-               final String plugin = String.format("json:%sFailed%d.json",
-                     Paths.get(jsonPath).toUri().toString().replaceAll("file:///", "")
-                     , index[0]);
+               final String plugin = String.format("json:%sFailed%d.json", Paths.get(jsonPath).toUri().toString().replaceAll("file:///", ""), index[0]);
+               final String rerun = String.format("rerun:%sFailed%d.txt", Paths.get(jsonPath).toUri().toString().replaceAll("file:///", ""), index[0]);
+               List<String> plugins = new ArrayList<>();
+               plugins.add(plugin);
+               plugins.add(rerun);
+
                if (!text.trim().isEmpty()) {
                   getLog().info(text);
                   Writer writer = Files.newBufferedWriter(Paths.get(directory.getPath() + "/" + className));
-                  writeTemplate(text, writer, className, plugin);
+                  writeTemplate(text, writer, className, plugins);
                   writer.close();
+                  index[0]++;
                }
             } catch (IOException e) {
                getLog().error(e.getMessage());
             }
-            index[0]++;
          });
       } catch (IOException e) {
          getLog().error(e.getCause());
@@ -92,13 +135,13 @@ public class RunnerMojo extends AbstractMojo {
    /**
     * Writes the templates to the disk.
     *
-    * @param feature
-    * @param writer
-    * @param className
-    * @param plugin
+    * @param feature the feature file name
+    * @param writer file writer
+    * @param className String class name
+    * @param plugin List of plugins
     */
-   public void writeTemplate(final String feature, Writer writer, final String className, final String plugin) {
-      //TODO templates for junit and testng
+   public void writeTemplate(final String feature, Writer writer, final String className, final List<String> plugin) {
+      //TODO templates for junit and TESTNG
       String name = "cucumber-serenity-runner.vm";
       VelocityEngine velocityEngine = getVelocityEngine();
       Template template = velocityEngine.getTemplate(name);
@@ -113,8 +156,7 @@ public class RunnerMojo extends AbstractMojo {
    private VelocityEngine getVelocityEngine() {
       final Properties props = new Properties();
       props.put("resource.loader", "class");
-      props.put("class.resource.loader.class",
-            "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+      props.put("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
       VelocityEngine velocityEngine = new VelocityEngine(props);
       velocityEngine.init();
       return velocityEngine;
@@ -125,13 +167,13 @@ public class RunnerMojo extends AbstractMojo {
     *
     * @param feature
     * @param className
-    * @param plugin
+    * @param plugins
     * @return {@link VelocityContext}
     */
-   private VelocityContext buildContext(String feature, String className, String plugin) {
+   private VelocityContext buildContext(String feature, String className, List<String> plugins) {
       VelocityContext context = new VelocityContext();
       context.put("featureFile", feature.trim());
-      context.put("plugins", plugin);
+      context.put("plugins", plugins);
       context.put("packageName", packageName);
       context.put("strict", true);
       context.put("monochrome", true);

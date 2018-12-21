@@ -12,7 +12,13 @@ import net.serenitybdd.cucumber.CucumberWithSerenity;
 @CucumberOptions(
 strict = $strict,
 features = {"$featureFile"},
-plugin = {"$plugins"},
+#if($plugins)
+plugin = {
+#foreach ($p in $plugins)
+"$p",
+#end
+},
+#end
 monochrome = $monochrome,
 #if(!$featureFile.contains(".feature:") && $tags)
 tags = #stringArray($tags),
