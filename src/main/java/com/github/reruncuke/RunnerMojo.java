@@ -12,7 +12,7 @@
       limitations under the License.
 */
 
-package io.github.cucumber.plugin;
+package com.github.reruncuke;
 
 import java.io.File;
 import java.io.IOException;

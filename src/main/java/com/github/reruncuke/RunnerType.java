@@ -1,4 +1,4 @@
-package io.github.cucumber.plugin;
+package com.github.reruncuke;
 
 /**
  * The enum Runner type.
