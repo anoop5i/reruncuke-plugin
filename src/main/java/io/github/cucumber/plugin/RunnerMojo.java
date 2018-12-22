@@ -39,7 +39,7 @@ import org.apache.velocity.app.VelocityEngine;
  *
  * @author Anoop Sivarajan on 19/12/2018
  */
-@Mojo(name = "rerun")
+@Mojo(name = "generate")
 public class RunnerMojo extends AbstractMojo {
 
    /**
