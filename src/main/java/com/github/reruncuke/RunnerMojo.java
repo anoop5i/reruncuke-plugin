@@ -85,7 +85,7 @@ public class RunnerMojo extends AbstractMojo {
     * The generated runner classes will be saved under src/test/java and package name set in the config.
     * </p>
     *
-    * @throws MojoFailureException
+    * @throws MojoFailureException Throws plugin failure exception
     */
    public void execute() throws MojoFailureException {
       if (type == null) {
