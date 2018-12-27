@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/anoopsivarajan/rerun-maven-plugin.svg?branch=master)](https://github.com/anoopsivarajan/rerun-maven-plugin) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.anoopsivarajan/reruncuke-plugin/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/io.github.anoopsivarajan/reruncuke-plugin) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.com/anoopsivarajan/reruncuke-plugin.svg?branch=master)](https://github.com/anoopsivarajan/reruncuke-plugin) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.anoopsivarajan/reruncuke-plugin/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/io.github.anoopsivarajan/reruncuke-plugin) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # reruncuke-plugin
 
