@@ -104,7 +104,6 @@ public class RunnerMojo extends AbstractMojo {
          if (Objects.requireNonNull(directory.listFiles()).length != 0) {
             Arrays.stream(Objects.requireNonNull(directory.listFiles())).forEach(File::delete);
          }
-
          final DirectoryStream<Path> files = Files.newDirectoryStream(dir, path -> path.toString().endsWith(".txt"));
          int[] index = {0};
          files.forEach(x -> {
@@ -138,10 +137,9 @@ public class RunnerMojo extends AbstractMojo {
             }
          });
       } catch (IOException e) {
+         getLog().error("Failed to parse the cucumber json files");
          getLog().error(e);
-         throw new MojoFailureException(e.getMessage());
       }
-
    }
 
    /**
@@ -153,7 +151,6 @@ public class RunnerMojo extends AbstractMojo {
     * @param plugin List of plugins
     */
    private void writeTemplate(final String feature, Writer writer, final String className, final List<String> plugin) {
-      //TODO template for TESTNG
       String name;
       switch (RunnerType.valueOf(type)) {
          default:
