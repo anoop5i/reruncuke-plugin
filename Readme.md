@@ -28,7 +28,6 @@ The above configuration generate the runner classes with name 'FailedRunner*.jav
 Runner class definition changes based on the type selected in the configuration. Following are the available types.
 * JUNIT - selects the class template with @RunWith(Cucumber.class)
 * SERENITY - selects the class template with @RunWith(CucumberSerenity.class)
-* TESTNG - TODO
 
 ##### Usage with cucumber-jvm-parallel-plugin and Jenkins
 ```
