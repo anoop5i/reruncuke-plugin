@@ -12,7 +12,7 @@ Example
       <plugin>
            <groupId>io.github.anoopsivarajan</groupId>
            <artifactId>reruncuke-plugin</artifactId>
-           <version>1.0.0</version>
+           <version>1.0.2</version>
            <configuration>
               <packageName>com.test.failed</packageName>
               <glue>com.app.auto</glue>
